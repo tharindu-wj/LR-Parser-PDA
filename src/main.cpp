@@ -10,9 +10,10 @@
 #include <cstdio>
 
 #include "token.h"
+#include "grammar.h"
 
 // Map a type name from the lexer output back to a TokenType.
-static TokenType typeFromName(const std::string& name) {
+static TokenType tokenTypeFromName(const std::string& name) {
     if (name == "KEYWORD") return TokenType::Keyword;
     if (name == "IDENTIFIER") return TokenType::Identifier;
     if (name == "NUMBER") return TokenType::Number;
@@ -21,38 +22,53 @@ static TokenType typeFromName(const std::string& name) {
     return TokenType::Error;
 }
 
-static std::vector<Token> readTokens(std::istream& in) {
+static std::vector<Token> readTokens(std::istream& inputStream) {
     std::vector<Token> tokens;
-    std::string raw;
+    std::string currentLine;
 
-    // read line by line
-    while (std::getline(in, raw)) {
-        std::size_t colon = raw.find(": ");
-        if (colon == std::string::npos) {
+    while (std::getline(inputStream, currentLine)) {
+        const std::size_t colonPosition = currentLine.find(": ");
+        if (colonPosition == std::string::npos) {
             continue;
         }
 
-        // position: "Line <>, Column <>"
-        int line = 0, col = 0;
-        std::sscanf(raw.c_str(), "Line %d, Column %d", &line, &col);
+        // read the position: "Line <>, Column <>"
+        int lineNumber = 0;
+        int columnNumber = 0;
+        std::sscanf(currentLine.c_str(), "Line %d, Column %d", &lineNumber, &columnNumber);
 
-        // after the colon: TYPE then "lexeme"
-        const std::string rest = raw.substr(colon + 2);
-        std::istringstream ss(rest);
+        // extraxt type name
+        const std::string afterColon = currentLine.substr(colonPosition + 2);
+        std::istringstream afterColonStream(afterColon);
         std::string typeName;
-        ss >> typeName;
+        afterColonStream >> typeName;
 
-        const std::size_t q1 = rest.find('"');
-        const std::size_t q2 = rest.rfind('"');
+        // extract lexeme
+        const std::size_t firstQuotePosition = afterColon.find('"');
+        const std::size_t lastQuotePosition = afterColon.rfind('"');
         std::string lexeme;
-        if (q1 != std::string::npos && q2 != std::string::npos && q2 > q1) {
-            lexeme = rest.substr(q1 + 1, q2 - q1 - 1);
-        }
+        if (firstQuotePosition != std::string::npos &&
+            lastQuotePosition != std::string::npos &&
+            lastQuotePosition > firstQuotePosition) {
+            lexeme = afterColon.substr(firstQuotePosition + 1, lastQuotePosition - firstQuotePosition - 1);
+            }
 
-        tokens.push_back({ typeFromName(typeName), lexeme, line, col });
+        Token token;
+        token.type = tokenTypeFromName(typeName);
+        token.lexeme = lexeme;
+        token.lineNumber = lineNumber;
+        token.columnNumber = columnNumber;
+        tokens.push_back(token);
     }
 
-    tokens.push_back({ TokenType::End, "$", 0, 0 });   // end-of-input marker
+    // add the end of input marker
+    Token endToken;
+    endToken.type = TokenType::End;
+    endToken.lexeme = "$";
+    endToken.lineNumber = 0;
+    endToken.columnNumber = 0;
+    tokens.push_back(endToken);
+
     return tokens;
 }
 
@@ -63,20 +79,28 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // open input file.
-    std::ifstream input(argv[1]);
-    if (!input) {
-        std::cout << "Error: could not open file '" << argv[1] << "'.\n";
+    // load grammar from a file
+    Grammar grammar;
+    if (!loadGrammar(argv[1], grammar)) {
+        std::cerr << "Error: could not load grammar '" << argv[1] << "'.\n";
         return 1;
     }
+    printGrammar(grammar);
 
-    const std::vector<Token> tokens = readTokens(input);
+    if (argc >= 3) {
+        std::ifstream tokenFile(argv[2]);
+        if (!tokenFile) {
+            std::cerr << "Error: could not open token file '" << argv[2] << "'.\n";
+            return 1;
+        }
 
-    std::cout << "Read " << tokens.size() << " tokens:\n";
-    for (const Token& t : tokens) {
-        std::cout << "  " << tokenTypeName(t.type)
-                  << " '" << t.lexeme << "'"
-                  << "  (" << t.line << ":" << t.col << ")\n";
+        std::vector<Token> tokens = readTokens(tokenFile);
+        std::cout << "\nRead " << tokens.size() << " tokens:\n";
+        for (std::size_t tokenIndex = 0; tokenIndex < tokens.size(); ++tokenIndex) {
+            const Token& token = tokens[tokenIndex];
+            std::cout << "  " << tokenTypeName(token.type) << " '" << token.lexeme << "'"
+                << "  (" << token.lineNumber << ":" << token.columnNumber << ")\n";
+        }
     }
 
     return 0;

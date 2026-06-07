@@ -16,8 +16,8 @@ enum class TokenType {
 struct Token {
     TokenType   type;
     std::string lexeme;
-    int line = 0;
-    int col  = 0;
+    int lineNumber = 0;
+    int columnNumber  = 0;
 };
 
 inline const char* tokenTypeName(TokenType t) {
