@@ -1,15 +1,15 @@
 //
-// Created by thari on 7/06/2026.
+// Created by thari on 8/06/2026.
 //
+
+#include "Grammar.h"
+
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
-#include "grammar.h"
-
-
 // remove spaces and tabs
-static std::string trimWhitespace(const std::string& text) {
+static std::string trimWhitespace(const std::string &text) {
     const std::size_t firstNonSpace = text.find_first_not_of(" \t\r\n");
     if (firstNonSpace == std::string::npos) {
         return "";
@@ -19,7 +19,7 @@ static std::string trimWhitespace(const std::string& text) {
 }
 
 // turn one alternative into a Production.
-static Production parseOneAlternative(const std::string& leftHandSide, const std::string& alternativeText) {
+static Production parseOneAlternative(const std::string &leftHandSide, const std::string &alternativeText) {
     Production production;
     production.leftHandSide = leftHandSide;
 
@@ -52,7 +52,7 @@ static Production parseOneAlternative(const std::string& leftHandSide, const std
     return production;
 }
 
-bool loadGrammar(const std::string& filePath, Grammar& grammar) {
+bool Grammar::load(const std::string &filePath) {
     std::ifstream grammarFile(filePath);
     if (!grammarFile) {
         return false;
@@ -72,7 +72,7 @@ bool loadGrammar(const std::string& filePath, Grammar& grammar) {
             continue;
         }
 
-        // split the line into a left hand side and a right-hand side at "->"
+        // split the line into a left-hand side and a right-hand side at "->"
         const std::size_t arrowPosition = currentLine.find("->");
         if (arrowPosition == std::string::npos) {
             continue;
@@ -81,13 +81,13 @@ bool loadGrammar(const std::string& filePath, Grammar& grammar) {
         const std::string leftHandSide = trimWhitespace(currentLine.substr(0, arrowPosition));
         const std::string rightHandSidePart = trimWhitespace(currentLine.substr(arrowPosition + 2));
 
-        grammar.nonTerminalSymbols.insert(leftHandSide);
+        nonTerminalSymbols_.insert(leftHandSide);
         if (isFirstLeftHandSide) {
-            grammar.startSymbol = leftHandSide;
+            startSymbol_ = leftHandSide;
             isFirstLeftHandSide = false;
         }
 
-        // split the right hand side into alternatives at each '|'
+        // split the right-hand side into alternatives at each '|'
         std::vector<std::string> alternatives;
         std::string currentAlternative;
         for (std::size_t characterIndex = 0; characterIndex < rightHandSidePart.size(); ++characterIndex) {
@@ -105,19 +105,17 @@ bool loadGrammar(const std::string& filePath, Grammar& grammar) {
         for (std::size_t alternativeIndex = 0; alternativeIndex < alternatives.size(); ++alternativeIndex) {
             std::string oneAlternative = trimWhitespace(alternatives[alternativeIndex]);
             Production production = parseOneAlternative(leftHandSide, oneAlternative);
-            grammar.productions.push_back(production);
+            productions_.push_back(production);
         }
     }
 
-    // a symbol is a terminal if it was quoted
-    // or if it never appears as a left hand side anywhere in the grammar
-    for (std::size_t productionIndex = 0; productionIndex < grammar.productions.size(); ++productionIndex) {
-        const Production& production = grammar.productions[productionIndex];
+    for (std::size_t productionIndex = 0; productionIndex < productions_.size(); ++productionIndex) {
+        const Production &production = productions_[productionIndex];
         for (std::size_t symbolIndex = 0; symbolIndex < production.rightHandSide.size(); ++symbolIndex) {
-            const GrammarSymbol& grammarSymbol = production.rightHandSide[symbolIndex];
-            bool appearsAsLeftHandSide = (grammar.nonTerminalSymbols.find(grammarSymbol.symbolName) != grammar.nonTerminalSymbols.end());
+            const GrammarSymbol &grammarSymbol = production.rightHandSide[symbolIndex];
+            bool appearsAsLeftHandSide = (nonTerminalSymbols_.find(grammarSymbol.symbolName) != nonTerminalSymbols_.end());
             if (grammarSymbol.isQuotedTerminal || !appearsAsLeftHandSide) {
-                grammar.terminalSymbols.insert(grammarSymbol.symbolName);
+                terminalSymbols_.insert(grammarSymbol.symbolName);
             }
         }
     }
@@ -125,19 +123,18 @@ bool loadGrammar(const std::string& filePath, Grammar& grammar) {
     return true;
 }
 
-void printGrammar(const Grammar& grammar) {
-    std::cout << "Start symbol: " << grammar.startSymbol << "\n\n";
+void Grammar::print() const {
+    std::cout << "Start symbol: " << startSymbol_ << "\n\n";
 
-    std::cout << "Productions (" << grammar.productions.size() << "):\n";
-    int productionNumber = 0;
-    for (std::size_t productionIndex = 0; productionIndex < grammar.productions.size(); ++productionIndex) {
-        const Production& production = grammar.productions[productionIndex];
-        std::cout << "  " << productionNumber << ": " << production.leftHandSide << " ->";
+    std::cout << "Productions (" << productions_.size() << "):\n";
+    for (std::size_t productionIndex = 0; productionIndex < productions_.size(); ++productionIndex) {
+        const Production &production = productions_[productionIndex];
+        std::cout << "  " << productionIndex << ": " << production.leftHandSide << " ->";
         if (production.rightHandSide.empty()) {
             std::cout << " (epsilon)";
         } else {
             for (std::size_t symbolIndex = 0; symbolIndex < production.rightHandSide.size(); ++symbolIndex) {
-                const GrammarSymbol& grammarSymbol = production.rightHandSide[symbolIndex];
+                const GrammarSymbol &grammarSymbol = production.rightHandSide[symbolIndex];
                 if (grammarSymbol.isQuotedTerminal) {
                     std::cout << " \"" << grammarSymbol.symbolName << "\"";
                 } else {
@@ -146,17 +143,36 @@ void printGrammar(const Grammar& grammar) {
             }
         }
         std::cout << "\n";
-        productionNumber++;
     }
 
-    std::cout << "\nNon-terminals (" << grammar.nonTerminalSymbols.size() << "): ";
-    for (const std::string& nonTerminalName : grammar.nonTerminalSymbols) {
+    std::cout << "\nNon-terminals (" << nonTerminalSymbols_.size() << "): ";
+    for (const std::string &nonTerminalName : nonTerminalSymbols_) {
         std::cout << nonTerminalName << " ";
     }
 
-    std::cout << "\nTerminals (" << grammar.terminalSymbols.size() << "): ";
-    for (const std::string& terminalName : grammar.terminalSymbols) {
+    std::cout << "\nTerminals (" << terminalSymbols_.size() << "): ";
+    for (const std::string &terminalName : terminalSymbols_) {
         std::cout << terminalName << " ";
     }
     std::cout << "\n";
+}
+
+const std::string &Grammar::getStartSymbol() const {
+    return startSymbol_;
+}
+
+const std::vector<Production> &Grammar::getProductions() const {
+    return productions_;
+}
+
+const std::set<std::string> &Grammar::getTerminals() const {
+    return terminalSymbols_;
+}
+
+const std::set<std::string> &Grammar::getNonTerminals() const {
+    return nonTerminalSymbols_;
+}
+
+bool Grammar::isNonTerminal(const std::string &symbolName) const {
+    return nonTerminalSymbols_.find(symbolName) != nonTerminalSymbols_.end();
 }

@@ -1,5 +1,5 @@
 //
-// Created by thari on 7/06/2026.
+// Created by thari on 8/06/2026.
 //
 
 #ifndef LR_PARSER_TOKEN_H
@@ -7,21 +7,27 @@
 
 #include <string>
 
-// token categories used in assessment 1 lexer
-// additionally added end ($)
+// tokens defined in the lexer
+// End ($) is used to identify input finished
 enum class TokenType {
-    Keyword, Identifier, Number, Operator, Delimiter, Error, End
+    Keyword,
+    Identifier,
+    Number,
+    Operator,
+    Delimiter,
+    Error,
+    End
 };
 
 struct Token {
-    TokenType   type;
+    TokenType type;
     std::string lexeme;
     int lineNumber = 0;
-    int columnNumber  = 0;
+    int columnNumber = 0;
 };
 
-inline const char* tokenTypeName(TokenType t) {
-    switch (t) {
+inline const char *tokenTypeName(TokenType tokenType) {
+    switch (tokenType) {
         case TokenType::Keyword: return "KEYWORD";
         case TokenType::Identifier: return "IDENTIFIER";
         case TokenType::Number: return "NUMBER";
