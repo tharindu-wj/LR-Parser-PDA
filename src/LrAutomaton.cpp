@@ -129,7 +129,7 @@ void LrAutomaton::printItem(const Item &item) const {
     std::cout << production.leftHandSide << " ->";
     for (std::size_t k = 0; k <= production.rightHandSide.size(); ++k) {
         if (k == item.dotPosition) {
-            std::cout << " " << "•"; // the dot
+            std::cout << " .";
         }
         if (k < production.rightHandSide.size()) {
             const GrammarSymbol &symbol = production.rightHandSide[k];
@@ -177,4 +177,22 @@ void LrAutomaton::print() const {
 
 std::size_t LrAutomaton::stateCount() const {
     return states_.size();
+}
+
+const std::vector<Production> &LrAutomaton::getAugmentedProductions() const {
+    return augmentedProductions_;
+}
+
+const std::map<std::pair<int, std::string>, int> &LrAutomaton::getTransitions() const {
+    return transitions_;
+}
+
+std::vector<int> LrAutomaton::reducibleProductions(int state) const {
+    std::vector<int> result;
+    for (const Item &item : states_[state]) {
+        if (item.dotPosition == augmentedProductions_[item.productionIndex].rightHandSide.size()) {
+            result.push_back(item.productionIndex);
+        }
+    }
+    return result;
 }

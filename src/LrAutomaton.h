@@ -22,6 +22,12 @@ public:
 
     std::size_t stateCount() const;
 
+    const std::vector<Production> &getAugmentedProductions() const;
+
+    const std::map<std::pair<int, std::string>, int> &getTransitions() const;
+
+    std::vector<int> reducibleProductions(int state) const;
+
 private:
     // LR(0) item
     struct Item {

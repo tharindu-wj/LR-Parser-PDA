@@ -10,6 +10,7 @@
 #include "FirstFollow.h"
 #include "TokenStream.h"
 #include "LrAutomaton.h"
+#include "ParseTable.h"
 
 int main(int argc, char* argv[]) {
     // validate arguments
@@ -35,6 +36,11 @@ int main(int argc, char* argv[]) {
     LrAutomaton automaton;
     automaton.build(grammar);
     automaton.print();
+
+    // build SLR(1): ACTION/GOTO tables
+    ParseTable parseTable;
+    parseTable.build(grammar, firstFollow, automaton);
+    parseTable.print();
 
     // load token file
     if (argc >= 3) {
