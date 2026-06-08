@@ -11,6 +11,7 @@
 #include "TokenStream.h"
 #include "LrAutomaton.h"
 #include "ParseTable.h"
+#include "Parser.h"
 
 int main(int argc, char* argv[]) {
     // validate arguments
@@ -50,6 +51,10 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         tokens.print();
+
+        // PDA parser with token stream
+        Parser parser(parseTable, automaton.getAugmentedProductions());
+        parser.parse(tokens);
     }
 
     return 0;
