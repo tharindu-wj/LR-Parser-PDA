@@ -9,6 +9,7 @@
 #include "Grammar.h"
 #include "FirstFollow.h"
 #include "TokenStream.h"
+#include "LrAutomaton.h"
 
 int main(int argc, char* argv[]) {
     // validate arguments
@@ -25,9 +26,15 @@ int main(int argc, char* argv[]) {
     }
     grammar.print();
 
+    //
     FirstFollow firstFollow;
     firstFollow.compute(grammar);
     firstFollow.print(grammar);
+
+    // build LR(0) automaton: PDA states
+    LrAutomaton automaton;
+    automaton.build(grammar);
+    automaton.print();
 
     // load token file
     if (argc >= 3) {
