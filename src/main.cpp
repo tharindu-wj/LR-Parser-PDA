@@ -26,17 +26,17 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error: could not load grammar '" << argv[1] << "'.\n";
         return 1;
     }
-    grammar.print();
+    // grammar.print();
 
     //
     FirstFollow firstFollow;
     firstFollow.compute(grammar);
-    firstFollow.print(grammar);
+    // firstFollow.print(grammar);
 
     // build LR(0) automaton: PDA states
     LrAutomaton automaton;
     automaton.build(grammar);
-    automaton.print();
+    // automaton.print();
 
     // build SLR(1): ACTION/GOTO tables
     ParseTable parseTable;
