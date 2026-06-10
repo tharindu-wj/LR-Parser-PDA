@@ -12,6 +12,9 @@
 #include "Production.h"
 #include "ParseTable.h"
 #include "TokenStream.h"
+#include "ErrorReporter.h"
+
+class ParseNode;
 
 /**
  * table driven SLR parser
@@ -28,10 +31,23 @@ private:
     const ParseTable &table_;
     const std::vector<Production> &productions_;
 
+    // pushdown automaton
+    std::vector<int> stateStack_;
+    std::vector<ParseNode *> nodeStack_;
+
+    // syntax errors collected during the parse
+    ErrorReporter errors_;
+
     // map lexer token to grammar terminal
     std::string terminalOf(const Token &token) const;
 
     void printProduction(const Production &production) const;
+
+    // panic-mode recovery
+    bool recover(TokenStream &tokens);
+
+    // delete and clear any remaining parse tree nodes
+    void freeNodes();
 };
 
 

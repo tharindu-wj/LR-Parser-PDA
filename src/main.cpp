@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     // build SLR(1): ACTION/GOTO tables
     ParseTable parseTable;
     parseTable.build(grammar, firstFollow, automaton);
-    parseTable.print();
+    // parseTable.print();
 
     // load token file
     if (argc >= 3) {
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
             std::cerr << "Error: could not open token file '" << argv[2] << "'.\n";
             return 1;
         }
-        tokens.print();
+        // tokens.print();
 
         // PDA parser with token stream
         Parser parser(parseTable, automaton.getAugmentedProductions());
