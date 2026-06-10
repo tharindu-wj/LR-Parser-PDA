@@ -22,3 +22,9 @@ void RuleNode::print(int depth) const {
         children_[i]->print(depth + 1);
     }
 }
+
+void RuleNode::forEachChild(const std::function<void(const ParseNode &)> &visit) const {
+    for (std::size_t i = 0; i < children_.size(); ++i) {
+        children_[i]->forEach(visit);
+    }
+}

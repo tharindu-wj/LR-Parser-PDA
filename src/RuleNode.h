@@ -21,6 +21,9 @@ public:
 
     void print(int depth) const override;
 
+protected:
+    void forEachChild(const std::function<void(const ParseNode &)> &visit) const override;
+
 private:
     std::string ruleName_;
     std::vector<ParseNode *> children_;

@@ -172,7 +172,18 @@ bool Parser::parse(TokenStream &tokens) {
             if (!nodeStack_.empty()) {
                 ParseNode *root = nodeStack_.back();
                 nodeStack_.pop_back();
+
+                // functional traversal: count nodes and terminals with a lambda
+                std::size_t nodes = 0, terminals = 0;
+                root->forEach([&](const ParseNode &node) {
+                    ++nodes;
+                    if (node.isTerminal()) {
+                        ++terminals;
+                    }
+                });
+
                 root->print(0);
+                std::cout << "(" << nodes << " nodes, " << terminals << " terminals)\n";
                 delete root;
             }
 

@@ -26,7 +26,7 @@ struct Token {
     int columnNumber = 0;
 };
 
-inline const char *tokenTypeName(TokenType tokenType) {
+constexpr const char *tokenTypeName(TokenType tokenType) {
     switch (tokenType) {
         case TokenType::Keyword: return "KEYWORD";
         case TokenType::Identifier: return "IDENTIFIER";

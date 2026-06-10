@@ -17,6 +17,8 @@ public:
 
     void print(int depth) const override;
 
+    bool isTerminal() const override { return true; }
+
 private:
     Token token_;
 };

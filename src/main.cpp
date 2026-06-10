@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
 
 #include "Grammar.h"
 #include "FirstFollow.h"
@@ -19,6 +20,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Usage: " << argv[0] << " <grammar-file> [token-file]\n";
         return 1;
     }
+
+    // time: table construction
+    auto buildStart = std::chrono::steady_clock::now();
 
     // load grammar from a file
     Grammar grammar;
@@ -41,6 +45,7 @@ int main(int argc, char* argv[]) {
     // build SLR(1): ACTION/GOTO tables
     ParseTable parseTable;
     parseTable.build(grammar, firstFollow, automaton);
+    auto buildEnd = std::chrono::steady_clock::now();
     // parseTable.print();
 
     // load token file
@@ -54,7 +59,13 @@ int main(int argc, char* argv[]) {
 
         // PDA parser with token stream
         Parser parser(parseTable, automaton.getAugmentedProductions());
+        auto parseStart = std::chrono::steady_clock::now();
         parser.parse(tokens);
+        auto parseEnd = std::chrono::steady_clock::now();
+
+        using ms = std::chrono::duration<double, std::milli>;
+        std::cout << "\nTable build: " << ms(buildEnd - buildStart).count() << " ms\n";
+        std::cout << "Parse:       " << ms(parseEnd - parseStart).count() << " ms\n";
     }
 
     return 0;
