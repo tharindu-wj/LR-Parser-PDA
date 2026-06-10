@@ -1,0 +1,36 @@
+D:\Tharindu\Flinders\2026_1_computation\assignment_2\cmake-build-debug\lr_parser.exe grammar/grammar_v1.txt .\tests\inputs\A1.txt
+
+Parsing:
+  shift 'Number' -> state 3
+  reduce by rule 7: Factor -> Number
+  reduce by rule 4: Term -> Factor
+  shift '+' -> state 9
+  shift 'Number' -> state 3
+  reduce by rule 7: Factor -> Number
+  shift '*' -> state 8
+  shift 'Number' -> state 3
+  reduce by rule 7: Factor -> Number
+  reduce by rule 4: Term -> Factor
+  reduce by rule 3: Term -> Factor "*" Term
+  reduce by rule 2: Expression -> Term
+  reduce by rule 1: Expression -> Term "+" Expression
+  accept
+
+Result: input ACCEPTED
+
+Parse tree:
+Expression
+  Term
+    Factor
+      "1"
+  "+"
+  Expression
+    Term
+      Factor
+        "2"
+      "*"
+      Term
+        Factor
+          "3"
+
+Process finished with exit code 0

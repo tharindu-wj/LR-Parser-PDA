@@ -1,0 +1,61 @@
+# program and classes
+Program -> ClassDeclarationList
+ClassDeclarationList    -> ClassDeclaration | ClassDeclaration ClassDeclarationList
+ClassDeclaration    -> "class" Identifier "{" AccessSpecifierSections "}" ";"
+
+# access sections
+AccessSpecifierSections -> AccessSpecifierSection | AccessSpecifierSection AccessSpecifierSections
+AccessSpecifierSection  -> AccessSpecifier ":" MemberList
+AccessSpecifier -> "public" | "private" | "protected"
+
+# members
+MemberList  -> MemberDeclaration | MemberDeclaration MemberList
+MemberDeclaration   -> VarDeclaration | FunctionDeclaration | ClassDeclaration
+
+# declarations
+VarDeclaration  -> Type Identifier ";"
+FunctionDeclaration -> Type Identifier "(" ParameterListOpt ")" Block
+Type    -> "int" | "char" | Identifier
+ParameterListOpt    -> ParameterList | %empty
+ParameterList   -> Parameter | Parameter "," ParameterList
+Parameter   -> Type Identifier
+
+# statements
+Block   -> "{" StatementList "}"
+StatementList   -> Statement StatementList | %empty
+Statement   -> VarDeclaration
+Statement   -> AssignmentStatement
+Statement   -> ExpressionStatement
+Statement   -> IfStatement
+Statement   -> WhileStatement
+Statement   -> ForStatement
+Statement   -> ReturnStatement
+Statement   -> DeleteStatement
+Statement   -> Block
+AssignmentStatement -> Assignment ";"
+Assignment  -> Identifier "=" Expression
+ExpressionStatement -> Expression ";"
+ReturnStatement -> "return" Expression ";" | "return" ";"
+DeleteStatement -> "delete" Identifier ";"
+
+# control flow
+IfStatement -> "if" "(" Expression ")" Statement
+IfStatement -> "if" "(" Expression ")" Statement "else" Statement
+WhileStatement  -> "while" "(" Expression ")" Statement
+ForStatement    -> "for" "(" AssignmentOpt ";" ExpressionOpt ";" AssignmentOpt ")" Statement
+AssignmentOpt   -> Assignment | %empty
+ExpressionOpt   -> Expression | %empty
+
+# expressions
+Expression  -> AdditiveExpression RelationalOperator AdditiveExpression | AdditiveExpression
+RelationalOperator  -> "==" | "!=" | "<" | ">" | "<=" | ">="
+AdditiveExpression  -> Term "+" AdditiveExpression | Term "-" AdditiveExpression | Term
+Term    -> Factor "*" Term | Factor "/" Term | Factor
+Factor  -> "(" Expression ")"
+Factor  -> Identifier
+Factor  -> Number
+Factor  -> Identifier "(" ArgumentListOpt ")"
+Factor  -> Identifier "." Identifier
+Factor  -> "new" Identifier "(" ArgumentListOpt ")"
+ArgumentListOpt -> ArgumentList | %empty
+ArgumentList    -> Expression | Expression "," ArgumentList

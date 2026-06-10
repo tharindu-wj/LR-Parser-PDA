@@ -25,4 +25,6 @@ if(ENABLE_ASAN AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_link_options(-fsanitize=address)
 endif()
 
-add_executable(lr_parser src/main.cpp src/grammar.cpp)
+add_executable(lr_parser src/main.cpp src/Grammar.cpp src/TokenStream.cpp src/FirstFollow.cpp src/LrAutomaton.cpp
+        src/ParseTable.cpp src/Parser.cpp src/ParseNode.cpp src/TerminalNode.cpp src/RuleNode.cpp
+        src/ErrorReporter.cpp)

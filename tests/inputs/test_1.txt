@@ -1,5 +1,0 @@
-Line  1, Column  1: NUMBER     "1"
-Line  1, Column  3: OPERATOR   "+"
-Line  1, Column  5: NUMBER     "2"
-Line  1, Column  7: OPERATOR   "*"
-Line  1, Column  9: NUMBER     "3"
