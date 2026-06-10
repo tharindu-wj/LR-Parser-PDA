@@ -27,6 +27,8 @@ public:
     // parse token stream
     bool parse(TokenStream &tokens);
 
+    double lastParseMs() const { return lastLoopMs_; }
+
 private:
     const ParseTable &table_;
     const std::vector<Production> &productions_;
@@ -37,6 +39,8 @@ private:
 
     // syntax errors collected during the parse
     ErrorReporter errors_;
+
+    double lastLoopMs_ = 0.0;
 
     // map lexer token to grammar terminal
     std::string terminalOf(const Token &token) const;

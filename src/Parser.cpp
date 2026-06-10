@@ -5,6 +5,7 @@
 #include "Parser.h"
 
 #include <iostream>
+#include <chrono>
 
 #include "ParseNode.h"
 #include "TerminalNode.h"
@@ -106,6 +107,9 @@ bool Parser::parse(TokenStream &tokens) {
 
     std::cout << "\nParsing:\n";
 
+    // get time from decision loop only
+    auto loopStart = std::chrono::steady_clock::now();
+
     while (true) {
         int currentState = stateStack_.back();
         const Token &lookahead = tokens.peek();
@@ -157,6 +161,9 @@ bool Parser::parse(TokenStream &tokens) {
             std::cout << "\n";
 
         } else if (entry.kind == ActionEntry::Kind::Accept) {
+            using ms = std::chrono::duration<double, std::milli>;
+            lastLoopMs_ = ms(std::chrono::steady_clock::now() - loopStart).count();
+
             if (errors_.hasErrors()) {
                 std::cout << "\nResult: input REJECTED (" << errors_.count()
                     << " syntax error(s))\n";

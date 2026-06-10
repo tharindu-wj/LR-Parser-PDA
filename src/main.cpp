@@ -64,8 +64,14 @@ int main(int argc, char* argv[]) {
         auto parseEnd = std::chrono::steady_clock::now();
 
         using ms = std::chrono::duration<double, std::milli>;
-        std::cout << "\nTable build: " << ms(buildEnd - buildStart).count() << " ms\n";
-        std::cout << "Parse:       " << ms(parseEnd - parseStart).count() << " ms\n";
+        double buildMs = ms(buildEnd - buildStart).count();
+        double wallMs = ms(parseEnd - parseStart).count();
+        double loopMs = parser.lastParseMs();
+        std::cerr << "\n--- timing ---\n";
+        std::cerr << "Table build: " << buildMs << " ms (one-time)\n";
+        std::cerr << "Parse loop:  " << loopMs << " ms\n";
+        std::cerr << "Tree emit:   " << (wallMs - loopMs) << " ms\n";
+        std::cerr << "Parse total: " << wallMs << " ms\n";
     }
 
     return 0;
