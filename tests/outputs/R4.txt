@@ -1,0 +1,17 @@
+D:\Tharindu\Flinders\2026_1_computation\assignment_2\cmake-build-debug\lr_parser.exe grammar/grammar_v2.txt .\tests\inputs\R4.txt
+
+Parsing:
+  shift 'class' -> state 1
+  shift 'Identifier' -> state 5
+  shift '{' -> state 7
+  shift 'public' -> state 10
+  error at line 5, column 1: unexpected KEYWORD 'int'
+  recovered: resumed on ClassDeclaration at state 2
+  reduce by rule 2: ClassDeclarationList -> ClassDeclaration
+  reduce by rule 1: Program -> ClassDeclarationList
+
+Result: input REJECTED (1 syntax error(s))
+  line 5, column 1: unexpected KEYWORD 'int'
+1 syntax error(s) found.
+
+Process finished with exit code 0

@@ -1,0 +1,50 @@
+D:\Tharindu\Flinders\2026_1_computation\assignment_2\cmake-build-debug\lr_parser.exe grammar/grammar_v2.txt .\tests\inputs\E2.txt
+
+Parsing:
+  shift 'class' -> state 1
+  shift 'Identifier' -> state 5
+  shift '{' -> state 7
+  shift 'public' -> state 10
+  reduce by rule 8: AccessSpecifier -> "public"
+  shift ':' -> state 14
+  shift 'int' -> state 19
+  reduce by rule 18: Type -> "int"
+  shift 'Identifier' -> state 28
+  shift ';' -> state 30
+  reduce by rule 16: VarDeclaration -> Type Identifier ";"
+  reduce by rule 13: MemberDeclaration -> VarDeclaration
+  reduce by rule 11: MemberList -> MemberDeclaration
+  reduce by rule 7: AccessSpecifierSection -> AccessSpecifier ":" MemberList
+  reduce by rule 5: AccessSpecifierSections -> AccessSpecifierSection
+  shift '}' -> state 16
+  shift ';' -> state 26
+  reduce by rule 4: ClassDeclaration -> "class" Identifier "{" AccessSpecifierSections "}" ";"
+  reduce by rule 2: ClassDeclarationList -> ClassDeclaration
+  reduce by rule 1: Program -> ClassDeclarationList
+  accept
+
+Result: input ACCEPTED
+
+Parse tree:
+Program
+  ClassDeclarationList
+    ClassDeclaration
+      "class"
+      "C"
+      "{"
+      AccessSpecifierSections
+        AccessSpecifierSection
+          AccessSpecifier
+            "public"
+          ":"
+          MemberList
+            MemberDeclaration
+              VarDeclaration
+                Type
+                  "int"
+                "x"
+                ";"
+      "}"
+      ";"
+
+Process finished with exit code 0
