@@ -11,7 +11,7 @@ elseif(MSVC)
     add_compile_options(/W4)
 endif()
 
-# size optimisation to keep the build size under <50 KB
+# size optimisation
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS_RELEASE "-Os -s")
 endif()
